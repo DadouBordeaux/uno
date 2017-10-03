@@ -1,17 +1,31 @@
 import React from 'react'
-import { SettingUpTheGame } from './settingUpTheGame/SettingUpTheGame.js'
+import { SettingUpTheGame } from './game/SettingUpTheGame.js'
+import { Tour } from './game/Tour.js'
 
 export class App extends React.Component {
 // Manager of the states
-// is seetingupthegame is complete, display tour, then Result
-//state: settingupthegame is true, maximumScore reached is true, display result
+
+  constructor() {
+    super();
+    //this.state = settings, gameRanking
+    this.state = {
+      settings: undefined
+    }
+    this.gameSettingComplete = this.gameSettingComplete.bind(this)
+  }
+  gameSettingComplete(settings) {
+    this.setState({
+      settings: settings
+    })
+  }
+  //TODO: function gameIsOver() : setstate with game ranking
+
   render() {
+    //Comments are here for app's construction
     return (
       <div>
-        <SettingUpTheGame />
-        <div>Tour</div>
-        <div>Result</div>
-
+        {/* {this.state.settings ? <Tour settings={this.state.settings}/> : <SettingUpTheGame gameSettingComplete={this.gameSettingComplete}/> } */}
+        {<Tour />}
       </div>
     )
   }

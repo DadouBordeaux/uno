@@ -1,6 +1,6 @@
 import React from 'react'
 
-class MaximumScorePanel extends React.Component {
+class AddMaximumScore extends React.Component {
   constructor(props) {
     super(props);
     this.state = { maximumScore: 0 }
@@ -32,21 +32,21 @@ class MaximumScorePanel extends React.Component {
   }
 }
 
-
 class AddNewPlayer extends React.Component {
-  constructor() {
-    super();
-    this.state = { players: [
-
-    ], name: ''}
+  constructor(props) {
+    super(props);
+    this.state = {
+      players: [],
+      name: ''
+    }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.sendAllPlayers = props.getAllPlayers
+    this.playersEditionIsFinished = this.playersEditionIsFinished.bind(this)
   }
-
   handleChange(e) {
     this.setState({ name: e.target.value})
   }
-
   handleSubmit(e) {
     e.preventDefault();
     const newPlayer = {
@@ -59,17 +59,15 @@ class AddNewPlayer extends React.Component {
     })
     )
   }
+  playersEditionIsFinished() {
+    this.sendAllPlayers(this.state.players)
+  }
 
   render() {
     return (
       <div>
         <div>
-          {/*TODO: Define the way to handle player key problem:
-            {this.state.players.map((player) => (<div>{player}</div>))}
-            here, there's two key, name and score
-            - use keyed fragments https://reactjs.org/docs/create-fragment.html
-            - add score to each player when sending list to tour component
-          */}
+          {this.state.players.map((player, i) => <div key={i}>{player.name}</div>)}
         </div>
         <form onSubmit={this.handleSubmit}>
           <label>
@@ -78,36 +76,51 @@ class AddNewPlayer extends React.Component {
           </label>
           <button>Ajouter</button>
         </form>
+        <button onClick={this.playersEditionIsFinished}>Démarrer la partie</button>
       </div>
     )
   }
 }
 
-
-
-
 export class SettingUpTheGame extends React.Component {
-  constructor() {
-    super();
-    //When maximumscore and players's name complete, use props call back to tell App to lauch tour
-    this.state = {maximumScore: false}
+  constructor(props) {
+    super(props);
+    this.state = {
+      maximumScore: undefined,
+      players: undefined
+    }
     this.getMaximumScore = this.getMaximumScore.bind(this)
+    this.getAllPlayers = this.getAllPlayers.bind(this)
+    this.gameSettingIsComplete = props.gameSettingComplete;
+  }
+  componentDidUpdate() {
+    if((this.state.maximumScore) && (this.state.players)) {
+      this.gameSettingIsComplete(this.state)
+      //Reinit the component to it's birth state, TODO: Check if relevant to save maximumScore and players here
+      this.setState({
+        maximumScore: undefined,
+        players: undefined
+      })
+    }
   }
   getMaximumScore(score) {
     this.setState({
       maximumScore: score
     })
   }
+  getAllPlayers(players) {
+    this.setState({
+      players: players
+    })
+  }
+
   render() {
     return (
       <div>
-        <AddNewPlayer />
-        {/*
-          Uncomment when addNewPlayer is ready in the flow :
-          {this.state.maximumScore ? <AddNewPlayer /> :
-          <MaximumScorePanel
+        {this.state.maximumScore ? <AddNewPlayer getAllPlayers={this.getAllPlayers}/> :
+        <AddMaximumScore
           getMaximumScore = {this.getMaximumScore}
-        /> } */}
+        /> }
       </div>
     )
   }
